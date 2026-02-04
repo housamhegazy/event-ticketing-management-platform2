@@ -12,7 +12,7 @@ const {
 const {
   AuthMiddleware,
   authorize,
-} = require("../Middleware/AuthMiddleware.js");
+} = require("../middleware/AuthMiddleware.js");
 
 // dont forget to npm install cookie-parser in backend
 // protected route to set auth cookie
