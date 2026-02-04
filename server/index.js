@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 app.use(cookieParser()); // خاصه بقراءة الكوكيز من الطلبات ولازم تتواجد قبل اي روت
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 ); // تفعيل CORS للسماح لـ frontend (الذي يعمل على منفذ مختلف) بالاتصال بـ backend
