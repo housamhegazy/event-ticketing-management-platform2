@@ -1,0 +1,49 @@
+/* تصميم الكارت الزجاجي */
+.signup-card-glass {
+  background: rgba(255, 255, 255, 0.1); /* شفافية بيضاء */
+  backdrop-filter: blur(15px); /* التغبيش */
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  max-width: 450px;
+  width: 100%;
+}
+
+/* تصميم حقول الإدخال الشفافة */
+.glass-input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border-radius: 10px !important;
+  padding: 12px 15px !important;
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #00f2fe !important;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2) !important;
+}
+
+/* زر الـ Gradient */
+.btn-primary-gradient {
+  background: linear-gradient(45deg, #00f2fe, #4facfe);
+  color: white;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
+  filter: brightness(1.1);
+}
+
+/* راديو بوتون أنيق */
+.role-option input[type="radio"] {
+  accent-color: #00f2fe;
+  cursor: pointer;
+}
