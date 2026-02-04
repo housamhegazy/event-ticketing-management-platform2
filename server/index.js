@@ -16,7 +16,8 @@ app.use(
   })
 ); // تفعيل CORS للسماح لـ frontend (الذي يعمل على منفذ مختلف) بالاتصال بـ backend
 app.use(express.json()); // عشان السيرفر يفهم الـ JSON اللي جاي من الفرونت
-
+app.use(bodyParser.json()); // يسمح لـ Express بقراءة JSON في body الطلبات
+app.use(bodyParser.urlencoded({ extended: true })); // لقراءة بيانات النموذج المشفرة
 //============================ Routes =============================
 const userRoutes = require("./routes/user.js");
 const createEventRoute = require("./routes/createEventRoute.js");
