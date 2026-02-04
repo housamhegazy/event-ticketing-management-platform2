@@ -16,8 +16,6 @@ app.use(
   })
 ); // تفعيل CORS للسماح لـ frontend (الذي يعمل على منفذ مختلف) بالاتصال بـ backend
 app.use(express.json()); // عشان السيرفر يفهم الـ JSON اللي جاي من الفرونت
-app.use(bodyParser.json()); // يسمح لـ Express بقراءة JSON في body الطلبات
-app.use(bodyParser.urlencoded({ extended: true })); // لقراءة بيانات النموذج المشفرة
 //============================ Routes =============================
 const userRoutes = require("./routes/user.js");
 const createEventRoute = require("./routes/createEventRoute.js");
@@ -27,7 +25,7 @@ app.get('/', (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/events", createEventRoute);
 // ********************** Database & Server Start **********************
-const mongoURI = process.env.MONGODB_URI || "mongodb+srv://ticket:Qh1JeI0exjCYdmMv@event-teckiting.cgeowig.mongodb.net/all-data?appName=event-teckiting";
+const mongoURI = process.env.MONGODB_URI;
 
 mongoose.connect(mongoURI)
   .then(() => {
