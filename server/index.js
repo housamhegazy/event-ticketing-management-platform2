@@ -16,6 +16,7 @@ app.use(
   })
 ); // تفعيل CORS للسماح لـ frontend (الذي يعمل على منفذ مختلف) بالاتصال بـ backend
 app.use(express.json()); // عشان السيرفر يفهم الـ JSON اللي جاي من الفرونت
+
 //============================ Routes =============================
 const userRoutes = require("./routes/user.js");
 const createEventRoute = require("./routes/createEventRoute.js");
@@ -25,7 +26,7 @@ app.get('/', (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/events", createEventRoute);
 // ********************** Database & Server Start **********************
-const mongoURI = process.env.MONGODB_URI;
+const mongoURI = process.env.MONGODB_URI ;
 
 mongoose.connect(mongoURI)
   .then(() => {

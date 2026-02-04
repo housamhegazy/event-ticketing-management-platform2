@@ -25,6 +25,8 @@ function setAuthCookie(res, token) {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 1 أسبوع
   });
 }
+
+
 router.post("/register", async (req, res) => {
   // Handle user registration
   try {
