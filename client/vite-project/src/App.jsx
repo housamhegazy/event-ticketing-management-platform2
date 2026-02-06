@@ -22,6 +22,7 @@ import EditProfile from "./pages/profile/editProfile";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, isLoadingAuth, user } = useSelector(
+    // @ts-ignore
     (state) => state.auth,
   );
 
@@ -53,15 +54,8 @@ function App() {
         // home route for authenticated users(user and organizer)
         {
           index: true,
-          element: isAuthenticated ? (
-            user?.role === "admin" ? (
-              <AdminDashboard />
-            ) : (
+          element: 
               <Home />
-            )
-          ) : (
-            <Navigate to="/signin" />
-          ),
         },
         
         // auth routes

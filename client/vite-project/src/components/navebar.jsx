@@ -33,10 +33,20 @@ const Navebar = () => {
         )}
         {/* الشعار */}
         {/* for user and organizer */}
-        <NavLink to={"/"}><img src="/logo.png" style={{width:"50px",height:"50px",borderRadius:"50%",marginRight:"10"}}></img></NavLink>
+        <NavLink to={"/"}>
+          <img
+            src="/logo.png"
+            style={{
+              width: "50px",
+              height: "50px",
+              borderRadius: "50%",
+              marginRight: "10",
+            }}
+          ></img>
+        </NavLink>
         {(user?.role === "user" || user?.role === "organizer") && (
           <NavLink className="navbar-brand fw-bold me-3" to="/my-booked-events">
-             Events Tickets
+            Events Tickets
           </NavLink>
         )}
 
@@ -65,13 +75,12 @@ const Navebar = () => {
 
             {/* main page only on registered user and organizer */}
 
-            {isAuthenticated && (user?.role === "user" || user?.role === "organizer") && (
-              <li className="nav-item">
-                <NavLink className="nav-link " to="/">
-                  Main Page
-                </NavLink>
-              </li>
-            )}
+            <li className="nav-item">
+              <NavLink className="nav-link " to="/">
+                Main Page
+              </NavLink>
+            </li>
+
             {isAuthenticated && user?.role === "organizer" && (
               <li className="nav-item">
                 <NavLink className="nav-link" to="/organizer/create-event">

@@ -17,7 +17,7 @@ const EventDetails = () => {
   const [cancelBooking] = useCancelBookingMutation();
   const { refetch: refetchUser } = useGetUserByNameQuery();
 
-  const { data: attendees, refetch: refetchAttendees } = useGetEventAttendeesQuery(id);
+  const { data: attendees } = useGetEventAttendeesQuery(id);
 
 
   const handleBooking = async () => {

@@ -76,7 +76,7 @@ router.post(
   },
 );
 
-// get all events created by the organizer
+// get all events created by the organizer to edit and delete
 router.get(
   "/my-events",
   AuthMiddleware,
@@ -96,7 +96,7 @@ router.get(
     }
   },
 );
-//get event details by id to organizer and user
+//get event details by id to anyone
 router.get("/event/:id", AuthMiddleware, async (req, res) => {
   const organizerId = req.user.id;
   const eventId = req.params.id;
@@ -113,8 +113,8 @@ router.get("/event/:id", AuthMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error while fetching event" });
   }
 });
-// get all events in home page to organizer and user
-router.get("/all-events", AuthMiddleware, async (req, res) => {
+// get all events in home page to organizer and user and not user before login
+router.get("/all-events", async (req, res) => {
   try {
     const events = await Event.find({ isPublished: true }).populate(
       "organizer",
@@ -166,8 +166,8 @@ router.delete(
     }
   },
 );
-// search events by title or category by user and organizer
-router.get("/search", AuthMiddleware, async (req, res) => {
+// search events by title or category by anyone
+router.get("/search", async (req, res) => {
   try {
     const { title, category } = req.query;
     const query = {};
