@@ -19,6 +19,7 @@ import Ticket from "./pages/printTicket";
 import AdminDashboard from "./pages/admindashboard";
 import UsersManager from "./pages/admindashboard/allUsers";
 import EditProfile from "./pages/profile/editProfile";
+import PaymentSuccess from "./pages/myEvents/PaymentSuccess";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, isLoadingAuth, user } = useSelector(
@@ -125,6 +126,14 @@ function App() {
           path: "/ticket/:id",
           element: <ProtectedRoute allowedRoles={["user", "organizer"]}>
             <Ticket />
+          </ProtectedRoute>,
+        },
+        //successful page for payment (user and organizer)
+        {
+          path:"/payment-success",
+          element:
+          <ProtectedRoute allowedRoles={["user", "organizer"]}>
+            <PaymentSuccess />
           </ProtectedRoute>,
         },
         // only for admin

@@ -73,11 +73,12 @@ export const createEventApi = createApi({
     }),
     //book event
     bookEvent: builder.mutation({
-      query: (id) => ({
-        url: `/api/events/book-event/${id}`,
+      query: ({eventId,sessionId}) => ({
+        url: `/api/events/book-event/${eventId}`,
         method: "POST",
+        body:{sessionId}
       }),
-        invalidatesTags: (result, error, id) => [{ type: "Event", id }],
+        invalidatesTags: (result, error, eventId) => [{ type: "Event", eventId }],
     }),
     //cancel booking
     cancelBooking: builder.mutation({

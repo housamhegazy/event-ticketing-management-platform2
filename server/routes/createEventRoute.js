@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/userSchema.js");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const {
   AuthMiddleware,
   authorize,
@@ -256,11 +257,18 @@ router.put(
 );
 
 //book event here  for user and organizer
-router.post("/book-event/:id", AuthMiddleware, async (req, res) => {
+router.post("/book-event/:eventId", AuthMiddleware, async (req, res) => {
   try {
-    const eventId = req.params.id;
+    const eventId = req.params.eventId;
     const userId = req.user.id;
     const event = await Event.findById(eventId);
+    const { sessionId } = req.body;
+    // بنطلب من سترايب تفاصيل الجلسة دي
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const paymentIntentId = session.payment_intent; // مبروك، بقى معاك الـ ID الحقيقي
+
+
+    console.log("payment id is ", paymentIntentId);
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
@@ -286,7 +294,7 @@ router.post("/book-event/:id", AuthMiddleware, async (req, res) => {
     // بنستخدمfindOneAndUpdate عشان نضمن إن لو 100 واحد داسوا في نفس اللحظة، السيرفر ميسجلش أكتر من السعة
     const updatedEvent = await Event.findOneAndUpdate(
       { _id: eventId, availableSeats: { $gt: 0 } }, // شرط: لازم يكون فيه مكان
-      { $inc: { availableSeats: -1 }, $push: { attendees: req.user.id } }, // اطرح 1 من المقاعد المتاحة وضيف اليوزر لقائمة الحضور ✅
+      { $inc: { availableSeats: -1 }, $push: { attendees: userId } }, // اطرح 1 من المقاعد المتاحة وضيف اليوزر لقائمة الحضور ✅
       { new: true }, // رجع البيانات الجديدة بعد التعديل
     );
 
@@ -294,8 +302,18 @@ router.post("/book-event/:id", AuthMiddleware, async (req, res) => {
       return res.status(400).json({ message: "عذراً، نفدت المقاعد للتو!" });
     }
     // إضافة eventId إلى قائمة bookedEvents للمستخدم
+    // 3. تحديث بيانات المستخدم (إضافة الحجز وتخزين رقم عملية الدفع)
     await User.findByIdAndUpdate(userId, {
       $addToSet: { bookedEvents: eventId },
+      // بنضيف سجل في تاريخ المدفوعات عشان الـ Refund
+      $push: {
+        paymentHistory: {
+          eventId: eventId,
+          paymentIntentId: paymentIntentId,
+          amount: event.price,
+          date: new Date(),
+        },
+      },
     });
     res.json({ message: "Event booked successfully", event: updatedEvent });
   } catch (error) {
@@ -310,29 +328,57 @@ router.post("/cancel-booking/:id", AuthMiddleware, async (req, res) => {
     const eventId = req.params.id;
     const userId = req.user.id;
     const event = await Event.findById(eventId);
+    const user = await User.findById(userId);
+
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
 
     // Check if the user has booked this event
-    const user = await User.findById(userId);
     if (!user.bookedEvents.includes(eventId)) {
       return res.status(400).json({ message: "You haven't booked this event" });
+    }
+
+    // 2. البحث عن رقم العملية (Payment Intent) في تاريخ مدفوعات المستخدم
+    const paymentRecord = user.paymentHistory.find(
+      (p) => p.eventId.toString() === eventId,
+    );
+
+    // 3. تنفيذ استرداد الأموال (Refund) عبر Stripe
+    if (paymentRecord && paymentRecord.paymentIntentId) {
+      try {
+        const refund = await stripe.refunds.create({
+          payment_intent: paymentRecord.paymentIntentId,
+        });
+        console.log(
+          `Refund successful for PaymentIntent: ${paymentRecord.paymentIntentId}`,
+          refund,
+        );
+      } catch (stripeError) {
+        // لو حصل مشكلة في Stripe (مثلاً الفلوس اتردت قبل كدة)، بنطلع خطأ في الـ Console بس بنكمل كنسلة
+        console.error("Stripe Refund Error:", stripeError.message);
+      }
+    } else {
+      console.log("No payment record found for this event");
     }
 
     // Update event available seats
     const updatedEvent = await Event.findByIdAndUpdate(
       eventId,
       { $inc: { availableSeats: 1 }, $pull: { attendees: userId } },
-
       { new: true },
     );
 
     // Remove event from user's bookedEvents list
-    await User.findByIdAndUpdate(userId, { $pull: { bookedEvents: eventId } });
-
+    // 5. تحديث بيانات المستخدم (حذف الإيفينت من القائمة وحذف سجل الدفع النشط)
+    await User.findByIdAndUpdate(userId, {
+      $pull: {
+        bookedEvents: eventId,
+        paymentHistory: { eventId: eventId }, // بنشيل السجل عشان ميتعملوش Refund مرتين
+      },
+    });
     res.json({
-      message: "Booking cancelled successfully",
+      message: "Booking cancelled and refund processed successfully",
       event: updatedEvent,
     });
   } catch (error) {

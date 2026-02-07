@@ -20,11 +20,13 @@ app.use(express.json()); // عشان السيرفر يفهم الـ JSON الل�
 //============================ Routes =============================
 const userRoutes = require("./routes/user.js");
 const createEventRoute = require("./routes/createEventRoute.js");
+const paymentRoute = require("./routes/payment.js")
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 app.use("/api/users", userRoutes);
 app.use("/api/events", createEventRoute);
+app.use("/api/payment",paymentRoute)
 // ********************** Database & Server Start **********************
 const mongoURI = process.env.MONGODB_URI ;
 

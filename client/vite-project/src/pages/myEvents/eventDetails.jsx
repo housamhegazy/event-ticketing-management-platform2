@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useGetEventByIdQuery } from "../../Redux/events/createEventApi"; // تأكد من إضافة هذا الـ endpoint في الـ API
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
-import { useBookEventMutation } from "../../Redux/events/createEventApi";
+import {useCreateCheckoutSessionMutation} from "../../Redux/events/payment"
 import { useSelector } from "react-redux";
 import { useCancelBookingMutation,useGetEventAttendeesQuery } from "../../Redux/events/createEventApi";
 import { useGetUserByNameQuery } from "../../Redux/user/userApi";
@@ -12,31 +12,34 @@ const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: event, isLoading, isError } = useGetEventByIdQuery(id);
-  const [bookEvent] = useBookEventMutation();
+  // @ts-ignore
   const { user } = useSelector((state) => state.auth);
   const [cancelBooking] = useCancelBookingMutation();
   const { refetch: refetchUser } = useGetUserByNameQuery();
-
   const { data: attendees } = useGetEventAttendeesQuery(id);
 
-
+  // go to payment link
+const [createCheckoutSession, { isLoading: isRedirecting }] = useCreateCheckoutSessionMutation();
   const handleBooking = async () => {
     // هنا هنضيف منطق الحجز لاحقاً
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, book it!",
-    });
+  const result = await Swal.fire({
+    title: "Confirm Booking",
+    text: `You are about to book "${event.title}". Redirecting to secure payment...`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Proceed to Payment",
+  });
     if (result.isConfirmed) {
       try {
-        await bookEvent(id).unwrap();
-        await refetchUser();
-        Swal.fire("Booked!", "Your spot has been reserved.", "success");
-        // تحديث الصفحة لإظهار المقاعد المتبقية
+        const response = await createCheckoutSession(event).unwrap();
+        if (response.url) {
+        // توجيه المستخدم لصفحة سترايب
+        window.location.href = response.url;
+      } else {
+        throw new Error("Payment URL not found in response");
+      }
       } catch (err) {
         Swal.fire("Error!", err?.data?.message || "Booking failed.", "error");
       }
@@ -170,7 +173,7 @@ const EventDetails = () => {
                 disabled={
                   event.availableSeats <= 0 ||
                   user?.bookedEvents.includes(event._id) ||
-                  user?._id === event.organizer
+                  user?._id === event.organizer || isRedirecting
                 }
               >
                 {user?.bookedEvents.includes(event._id)

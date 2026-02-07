@@ -47,6 +47,15 @@ const UserSchema = new mongoose.Schema(
         ref: "Event",
       },
     ],
+    // sort paymentIntentId to use it whene cancel event booking
+    paymentHistory: [
+      {
+        eventId: { type: mongoose.Schema.Types.ObjectId, ref: "Event" },
+        paymentIntentId: { type: String, required: true },
+        amount: Number,
+        date: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true, // لإضافة حقلي createdAt و updatedAt تلقائياً
