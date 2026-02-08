@@ -3,16 +3,46 @@
   padding: 80px 0;
   background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
   overflow: hidden;
-  border-radius: 0 0 50px 50px; /* انحناء بسيط في الأسفل */
+  border-radius: 0 0 50px 50px;
+  transition: padding 0.3s ease; /* تنعيم التحول عند تصغير الشاشة */
+}
+
+/* التعديلات الخاصة بالجوال (Responsive) */
+@media (max-width: 768px) {
+  .search-hero-section {
+    padding: 50px 0; /* تقليل المساحة العلوية */
+    border-radius: 0 0 30px 30px; /* تقليل الانحناء */
+  }
+
+  .search-hero-section h2 {
+    font-size: 1.5rem !important; /* تصغير العنوان */
+  }
+
+  .search-hero-section p {
+    font-size: 0.85rem !important; /* تصغير النص الفرعي */
+  }
+
+  /* تصغير بوكس البحث */
+  .custom-search-bar {
+    max-width: 95%; /* عشان ميبقاش لازق في حواف الشاشة */
+    margin: 0 auto;
+  }
+
+  .custom-search-bar .form-control {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    font-size: 0.9rem; /* تصغير خط الكتابة */
+  }
 }
 
 /* تصميم الـ Input */
 .custom-search-bar {
-  transition: transform 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .custom-search-bar:focus-within {
-  transform: scale(1.03);
+  transform: scale(1.02); /* تقليل الـ scale شوية عشان ميبقاش مبالغ فيه */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* أنيميشن الخلفية */
@@ -23,6 +53,7 @@
   width: 100%;
   height: 100%;
   z-index: 0;
+  pointer-events: none; /* عشان المكعبات متمنعش الضغط على الزراير */
 }
 
 .container {
@@ -30,19 +61,19 @@
   z-index: 1;
 }
 
+/* المكعبات - تم تحسين حجمها عشان متغطيش الشاشة في الموبايل */
 .cube {
   position: absolute;
-  top: 80vh;
-  left: 45vw;
   width: 10px;
   height: 10px;
-  border: solid 1px #ffffff55;
+  border: solid 1px rgba(255, 255, 255, 0.3);
   transform-origin: top left;
   transform: scale(0) rotate(0deg) translate(-50%, -50%);
   animation: cube 12s ease-in forwards infinite;
 }
 
 .cube:nth-child(2n) { border-color: #fff; }
+.cube:nth-child(1) { top: 80vh; left: 45vw; }
 .cube:nth-child(2) { animation-delay: 2s; left: 25vw; top: 40vh; }
 .cube:nth-child(3) { animation-delay: 4s; left: 75vw; top: 50vh; }
 .cube:nth-child(4) { animation-delay: 6s; left: 90vw; top: 10vh; }
@@ -51,10 +82,10 @@
 @keyframes cube {
   from {
     transform: scale(0) rotate(0deg) translate(-50%, -50%);
-    opacity: 1;
+    opacity: 0.8;
   }
   to {
-    transform: scale(20) rotate(960deg) translate(-50%, -50%);
+    transform: scale(15) rotate(960deg) translate(-50%, -50%); /* قللت الـ scale لـ 15 بدل 20 */
     opacity: 0;
   }
 }

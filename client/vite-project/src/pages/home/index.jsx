@@ -23,7 +23,7 @@ const Home = () => {
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
       {/* عرض الكروت */}
-      <div className="row g-4">
+      <div className="row g-3 g-md-4">
         {filteredEvents?.length > 0 ? (
           filteredEvents.map((event, index) => (
             <motion.div 

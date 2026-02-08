@@ -6,16 +6,23 @@ import LoadingPage from "./pages/loadingPage";
 import { useGetUserByNameQuery } from "./Redux/user/userApi";
 const Root = () => {
   // =================== loading state from redux ===================
-const { isLoadingAuth } = useSelector((state) => state.auth);
+  const { isLoadingAuth } = useSelector((state) => state.auth);
   const { isLoading: userLoading } = useGetUserByNameQuery();
   // loading whene userloading
   if (isLoadingAuth || userLoading) {
     return <LoadingPage />;
   }
-// ================================================================================================================
+  // ================================================================================================================
 
   return (
-    <Box className="root" sx={{ display: "flex", flexDirection: "column", backgroundColor: "#e9f0e8" }}>
+    <Box
+      className="root"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "#e9f0e8",
+      }}
+    >
       {/* <ScrollToTop /> */}
       <Box
         sx={{
