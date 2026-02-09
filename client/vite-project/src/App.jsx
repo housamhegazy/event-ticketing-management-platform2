@@ -44,8 +44,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 function App() {
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
-
+  // @ts-ignore
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const router = createBrowserRouter([
     {
       path: "/",
