@@ -7,7 +7,10 @@ import { useGetUserByNameQuery } from "./Redux/user/userApi";
 const Root = () => {
   // =================== loading state from redux ===================
   const { isLoadingAuth } = useSelector((state) => state.auth);
-  const { isLoading: userLoading } = useGetUserByNameQuery();
+  const { isLoading: userLoading, isFetching } = useGetUserByNameQuery(undefined, {
+  // هيشتغل فقط لو إحنا مش متأكدين من حالة المستخدم
+  skip: false, 
+});
   // loading whene userloading
   if (isLoadingAuth || userLoading) {
     return <LoadingPage />;
