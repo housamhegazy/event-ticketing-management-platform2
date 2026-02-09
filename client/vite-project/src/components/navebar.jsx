@@ -1,21 +1,18 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, NavLink } from "react-router";
-import { useDispatch } from "react-redux";
-import { clearAuthUser } from "../Redux/user/authSlice";
 import { useNavigate } from "react-router-dom";
 import { useSignOutMutation } from "../Redux/user/userApi";
 const Navebar = () => {
   // @ts-ignore
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [signOut] = useSignOutMutation();
   const handleSignOut = async (e) => {
     e.preventDefault();
     try {
       await signOut().unwrap();
-      dispatch(clearAuthUser());
+      // dispatch(clearAuthUser());
       navigate("/signin");
     } catch (error) {
       console.error("Sign out failed:", error);

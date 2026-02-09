@@ -3,9 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useGetEventByIdQuery } from "../../Redux/events/createEventApi"; // تأكد من إضافة هذا الـ endpoint في الـ API
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
-import {useCreateCheckoutSessionMutation} from "../../Redux/events/payment"
+import { useCreateCheckoutSessionMutation } from "../../Redux/events/payment";
 import { useSelector } from "react-redux";
-import { useCancelBookingMutation,useGetEventAttendeesQuery } from "../../Redux/events/createEventApi";
+import {
+  useCancelBookingMutation,
+  useGetEventAttendeesQuery,
+} from "../../Redux/events/createEventApi";
 import { useGetUserByNameQuery } from "../../Redux/user/userApi";
 import { Link } from "react-router-dom";
 const EventDetails = () => {
@@ -19,27 +22,28 @@ const EventDetails = () => {
   const { data: attendees } = useGetEventAttendeesQuery(id);
 
   // go to payment link
-const [createCheckoutSession, { isLoading: isRedirecting }] = useCreateCheckoutSessionMutation();
+  const [createCheckoutSession, { isLoading: isRedirecting }] =
+    useCreateCheckoutSessionMutation();
   const handleBooking = async () => {
     // هنا هنضيف منطق الحجز لاحقاً
-  const result = await Swal.fire({
-    title: "Confirm Booking",
-    text: `You are about to book "${event.title}". Redirecting to secure payment...`,
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Proceed to Payment",
-  });
+    const result = await Swal.fire({
+      title: "Confirm Booking",
+      text: `You are about to book "${event.title}". Redirecting to secure payment...`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Proceed to Payment",
+    });
     if (result.isConfirmed) {
       try {
         const response = await createCheckoutSession(event).unwrap();
         if (response.url) {
-        // توجيه المستخدم لصفحة سترايب
-        window.location.href = response.url;
-      } else {
-        throw new Error("Payment URL not found in response");
-      }
+          // توجيه المستخدم لصفحة سترايب
+          window.location.href = response.url;
+        } else {
+          throw new Error("Payment URL not found in response");
+        }
       } catch (err) {
         Swal.fire("Error!", err?.data?.message || "Booking failed.", "error");
       }
@@ -173,7 +177,8 @@ const [createCheckoutSession, { isLoading: isRedirecting }] = useCreateCheckoutS
                 disabled={
                   event.availableSeats <= 0 ||
                   user?.bookedEvents.includes(event._id) ||
-                  user?._id === event.organizer || isRedirecting
+                  user?._id === event.organizer ||
+                  isRedirecting
                 }
               >
                 {user?.bookedEvents.includes(event._id)
@@ -210,28 +215,32 @@ const [createCheckoutSession, { isLoading: isRedirecting }] = useCreateCheckoutS
         </div>
       </div>
       {/* get attendees only for organizer that created the event */}
-      {user && user.role === "organizer" && user._id === event.organizer && attendees && attendees.length > 0 && (
-        <div className="mt-4">
-          <h5 className="fw-bold">Attendees ({attendees.length})</h5>
-          {/* attendees table */}
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {attendees.map((attendee) => (
-                <tr key={attendee._id}>
-                  <td>{attendee.username}</td>
-                  <td>{attendee.email}</td>
+      {user &&
+        user.role === "organizer" &&
+        user._id === event.organizer &&
+        attendees &&
+        attendees.length > 0 && (
+          <div className="mt-4">
+            <h5 className="fw-bold">Attendees ({attendees.length})</h5>
+            {/* attendees table */}
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Email</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {attendees.map((attendee) => (
+                  <tr key={attendee._id}>
+                    <td>{attendee.username}</td>
+                    <td>{attendee.email}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
     </motion.div>
   );
 };
